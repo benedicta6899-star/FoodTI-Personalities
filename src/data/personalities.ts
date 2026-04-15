@@ -53,7 +53,7 @@ export const personalityTypes: PersonalityType[] = [
     key: 'carb',
     code: 'CARB',
     scoreKey: 'carb',
-    name: '碳水教父',
+    name: '治愈型碳水依赖者',
     emoji: '🍜',
     summary: '面、饭、粉、饺子，是你真正意义上的精神基础设施。',
     soulHit: '你的情绪稳定系统，往往只差一碗面、一笼蒸饺或一份盖饭。',

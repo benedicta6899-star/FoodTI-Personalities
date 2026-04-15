@@ -28,7 +28,7 @@ const personalityLabelMap = {
   HOTP: '火锅原教旨主义者',
   MTEX: '奶茶鉴定师',
   DTRR: '减脂期叛徒',
-  CARB: '碳水教父',
+  CARB: '治愈型碳水依赖者',
   SPCY: '辣不怕战士',
   HLTH: '养生派修士',
   SWET: '甜食续命师',

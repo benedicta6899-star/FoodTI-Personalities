@@ -1,14 +1,20 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@500;600;700;900&display=swap");
 @import "tailwindcss";
 
 :root {
-  color: #24120d;
+  color: #3a2e2b;
   background:
-    radial-gradient(circle at top left, rgba(255, 205, 145, 0.5), transparent 22%),
-    radial-gradient(circle at top right, rgba(255, 141, 99, 0.24), transparent 28%),
-    linear-gradient(180deg, #fff7f1 0%, #fff1e6 100%);
+    radial-gradient(circle at top left, rgba(230, 110, 80, 0.1), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(244, 209, 184, 0.26), transparent 28%),
+    linear-gradient(180deg, #fffcf8 0%, #fffbf7 100%);
   font-family:
-    "PingFang SC", "苹方-简", "Hiragino Sans GB", "Microsoft YaHei", "ui-rounded", "SF Pro Rounded",
-    sans-serif;
+    "Noto Sans SC", "PingFang SC", "苹方-简", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-sans:
+    "Noto Sans SC", "PingFang SC", "苹方-简", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+  --bg-cream: #fffbf7;
+  --text-primary: #3a2e2b;
+  --accent: #e66e50;
 }
 
 * {
@@ -22,12 +28,40 @@ html {
 body {
   margin: 0;
   min-width: 320px;
+  background: var(--bg-cream);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 button {
   cursor: pointer;
 }
 
+#root {
+  min-height: 100vh;
+}
+
+.font-editorial {
+  font-family: var(--font-serif);
+}
+
+.font-ui {
+  font-family: var(--font-sans);
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-140%);
+  }
+
+  100% {
+    transform: translateX(220%);
+  }
+}
+
 ::selection {
-  background: rgba(255, 122, 61, 0.2);
+  background: rgba(230, 110, 80, 0.18);
 }
