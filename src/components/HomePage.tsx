@@ -131,7 +131,7 @@ export const HomePage = ({ onStart }: HomePageProps) => {
       ))}
 
       <header className="relative rounded-[28px] border border-white/70 bg-white/55 px-4 py-4 shadow-[0_16px_40px_rgba(163,122,99,0.08)] backdrop-blur-xl sm:px-5 md:px-6 md:py-5">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:grid-cols-2 sm:gap-4 lg:flex lg:items-center lg:justify-between">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:flex lg:items-center lg:justify-between">
           <div className="min-w-0 sm:min-w-[220px] md:min-w-[240px]">
             <div className="font-ui text-sm font-semibold uppercase tracking-[0.42em] text-[#e66e50]">
               FoodTI
@@ -144,7 +144,7 @@ export const HomePage = ({ onStart }: HomePageProps) => {
           </div>
 
           <motion.div
-            className="col-start-2 flex justify-center sm:col-span-2 sm:justify-center sm:px-2 lg:flex-1 lg:px-6"
+            className="flex justify-start sm:col-span-2 sm:justify-center sm:px-2 lg:flex-1 lg:px-6"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: 'easeOut' }}
@@ -156,7 +156,7 @@ export const HomePage = ({ onStart }: HomePageProps) => {
             />
           </motion.div>
 
-          <div className="flex justify-end sm:justify-end md:min-w-[240px] md:justify-end">
+          <div className="flex justify-start sm:justify-end md:min-w-[240px] md:justify-end">
             <motion.div
               whileHover={{ y: -2, boxShadow: '0 20px 40px rgba(163,122,99,0.10)' }}
               transition={cardTransition}
