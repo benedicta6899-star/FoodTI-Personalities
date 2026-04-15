@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import type { MealPlanItem, Recipe, RecipeCategory, SwapBucket, UserProfile } from '../types';
+import type { DecisionOption, MealPlanItem, Recipe, RecipeCategory, SwapBucket, UserProfile } from '../types';
 
 type MealPlanPageProps = {
   profile: UserProfile;
+  decision: DecisionOption;
   mealPlan: MealPlanItem[];
   onReplace: (category: RecipeCategory, recipe: Recipe) => void;
   onRegenerate: () => void;
+  onRestoreInitial: () => void;
   onIndulgent: () => void;
   onBack: () => void;
 };
@@ -25,9 +27,11 @@ const swapTitles: Record<SwapBucket, string> = {
 
 export const MealPlanPage = ({
   profile,
+  decision,
   mealPlan,
   onReplace,
   onRegenerate,
+  onRestoreInitial,
   onIndulgent,
   onBack,
 }: MealPlanPageProps) => {
@@ -56,7 +60,7 @@ export const MealPlanPage = ({
           </div>
           <div>
             <div className="text-sm font-medium text-[#8f5b44]">你的结论</div>
-            <div className="mt-2 text-lg font-bold text-[#2a1710]">今天别靠意志力硬撑，吃“可控版满足型餐单”</div>
+            <div className="mt-2 text-lg font-bold text-[#2a1710]">{decision.name}</div>
           </div>
         </div>
       </div>
@@ -111,8 +115,14 @@ export const MealPlanPage = ({
         <div className="text-lg font-bold">今日总热量：约 {totalKcal - 80} - {totalKcal + 40} kcal</div>
         <div className="mt-5 flex flex-wrap gap-4">
           <button
-            onClick={onRegenerate}
+            onClick={onRestoreInitial}
             className="rounded-full bg-white px-6 py-3 font-semibold text-[#1f1c1b] transition hover:-translate-y-0.5"
+          >
+            恢复初始菜单
+          </button>
+          <button
+            onClick={onRegenerate}
+            className="rounded-full border border-white/25 px-6 py-3 font-medium text-white transition hover:bg-white/10"
           >
             重新生成
           </button>

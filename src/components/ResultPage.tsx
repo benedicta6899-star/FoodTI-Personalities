@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { personalityVisualMap } from '../data/resultPresentation';
+import { personalityVisualMap, systemConclusionMap } from '../data/resultPresentation';
 import type { DecisionOption, MealPlanItem, Recipe, RecipeCategory, UserProfile } from '../types';
 
 type ResultPageProps = {
@@ -11,6 +11,7 @@ type ResultPageProps = {
   onDecisionRefresh: () => void;
   onMealReplace: (category: RecipeCategory, recipe: Recipe) => void;
   onMealRegenerate: () => void;
+  onMealRestoreInitial: () => void;
   onMealIndulgent: () => void;
   onShare: () => void;
   onRestart: () => void;
@@ -114,12 +115,16 @@ export const ResultPage = ({
   onDecisionRefresh,
   onMealReplace,
   onMealRegenerate,
+  onMealRestoreInitial,
   onMealIndulgent,
   onShare,
   onRestart,
 }: ResultPageProps) => {
   const [openCategory, setOpenCategory] = useState<RecipeCategory | null>(null);
   const presentation = personalityVisualMap[profile.primaryTypeCode];
+  const dynamicSystemConclusion =
+    systemConclusionMap[profile.primaryTypeCode as keyof typeof systemConclusionMap] ??
+    '你不是在“选吃的”，你更像是在让人格接管这顿饭。';
   const highlightKeywords = highlightKeywordMap[profile.primaryTypeCode] ?? [];
   const primaryScore = profile.scores[profile.primaryScoreKey] ?? 0;
   const totalKcal = mealPlan.reduce((sum, item) => sum + item.current.kcal, 0);
@@ -189,7 +194,7 @@ export const ResultPage = ({
           <div className="rounded-[24px] border border-[#d9e5dd] bg-[#f7fbf8] p-5">
             <div className="text-sm font-semibold uppercase tracking-[0.24em] text-[#6f8778]">📌 系统结论</div>
             <div className="mt-3 text-xl font-bold leading-9 text-[#1f3128]">
-              你不是在“选吃的”，你更像是在让人格接管这顿饭。
+              {dynamicSystemConclusion}
             </div>
           </div>
         </div>
@@ -365,10 +370,10 @@ export const ResultPage = ({
           <div className="text-lg font-bold">今日总热量：约 {totalKcal - 80} - {totalKcal + 40} kcal</div>
           <div className="mt-5 flex flex-wrap gap-4">
             <button
-              onClick={onMealRegenerate}
+              onClick={onMealRestoreInitial}
               className="rounded-full bg-white px-6 py-3 font-semibold text-[#24372e] transition hover:-translate-y-0.5"
             >
-              保存今天这套
+              恢复初始菜单
             </button>
             <button
               onClick={onMealRegenerate}

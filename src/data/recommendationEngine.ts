@@ -4,6 +4,7 @@ import { easterEggs, personalityTypes, regionTags, secondaryTags } from './perso
 import type {
   AnswerMap,
   DecisionOption,
+  MenuPlan,
   MealPlanItem,
   Question,
   QuizResult,
@@ -14,6 +15,11 @@ import type {
   SwapBucket,
   UserProfile,
 } from '../types';
+
+type GenerateMenuPlanOptions = {
+  excludeCurrent?: MenuPlan | null;
+  diversify?: boolean;
+};
 
 const personalityScoreKeys = personalityTypes.map((item) => item.scoreKey);
 const regionScoreKeys = ['sichuan', 'guangdong', 'dongbei', 'jiangzhe'];
@@ -228,6 +234,21 @@ const pickRecipesByTags = (meal: RecipeCategory, profile: UserProfile) => {
   return ranked.length > 0 ? ranked : mealFallbackByCategory[meal].map(findRecipe);
 };
 
+const pickDiversifiedRecipe = (
+  rankedRecipes: Recipe[],
+  currentPlan: MenuPlan | null | undefined,
+  meal: RecipeCategory,
+) => {
+  const currentRecipe = currentPlan?.meals.find((item) => item.category === meal)?.current;
+  if (!currentRecipe) return rankedRecipes[0];
+
+  return (
+    rankedRecipes.find((recipe) => recipe.id !== currentRecipe.id && recipe.swapGroup !== currentRecipe.swapGroup) ??
+    rankedRecipes.find((recipe) => recipe.id !== currentRecipe.id) ??
+    rankedRecipes[0]
+  );
+};
+
 const groupSwapRecipes = (baseRecipe: Recipe, meal: RecipeCategory, profile: UserProfile): Record<SwapBucket, Recipe[]> => {
   const all = pickRecipesByTags(meal, profile).filter((recipe) => recipe.id !== baseRecipe.id);
   const similar = all.filter((recipe) => recipe.swapGroup === baseRecipe.swapGroup).slice(0, 2);
@@ -241,11 +262,31 @@ const groupSwapRecipes = (baseRecipe: Recipe, meal: RecipeCategory, profile: Use
   };
 };
 
-export const buildMealPlan = (profile: UserProfile): MealPlanItem[] => {
-  const breakfast = pickRecipesByTags('breakfast', profile)[0];
-  const lunch = pickRecipesByTags('lunch', profile)[0];
-  const dinner = pickRecipesByTags('dinner', profile)[0];
-  const snack = pickRecipesByTags('snack', profile)[0];
+export const buildMealPlan = (
+  profile: UserProfile,
+  options: Pick<GenerateMenuPlanOptions, 'excludeCurrent' | 'diversify'> = {},
+): MealPlanItem[] => {
+  const breakfastPool = pickRecipesByTags('breakfast', profile);
+  const lunchPool = pickRecipesByTags('lunch', profile);
+  const dinnerPool = pickRecipesByTags('dinner', profile);
+  const snackPool = pickRecipesByTags('snack', profile);
+
+  const breakfast =
+    options.diversify && options.excludeCurrent
+      ? pickDiversifiedRecipe(breakfastPool, options.excludeCurrent, 'breakfast')
+      : breakfastPool[0];
+  const lunch =
+    options.diversify && options.excludeCurrent
+      ? pickDiversifiedRecipe(lunchPool, options.excludeCurrent, 'lunch')
+      : lunchPool[0];
+  const dinner =
+    options.diversify && options.excludeCurrent
+      ? pickDiversifiedRecipe(dinnerPool, options.excludeCurrent, 'dinner')
+      : dinnerPool[0];
+  const snack =
+    options.diversify && options.excludeCurrent
+      ? pickDiversifiedRecipe(snackPool, options.excludeCurrent, 'snack')
+      : snackPool[0];
 
   return [
     { category: 'breakfast', current: breakfast, swaps: groupSwapRecipes(breakfast, 'breakfast', profile) },
@@ -253,6 +294,23 @@ export const buildMealPlan = (profile: UserProfile): MealPlanItem[] => {
     { category: 'dinner', current: dinner, swaps: groupSwapRecipes(dinner, 'dinner', profile) },
     { category: 'snack', current: snack, swaps: groupSwapRecipes(snack, 'snack', profile) },
   ];
+};
+
+export const generateMenuPlan = (
+  profile: UserProfile,
+  options: GenerateMenuPlanOptions = {},
+): MenuPlan => {
+  const rankedDecisions = getDecisionCandidates(profile);
+  const currentDecisionId = options.excludeCurrent?.decision.id;
+  const decision =
+    options.diversify && currentDecisionId
+      ? rankedDecisions.find((item) => item.id !== currentDecisionId) ?? rankedDecisions[0]
+      : rankedDecisions[0];
+
+  return {
+    decision,
+    meals: buildMealPlan(profile, options),
+  };
 };
 
 export const getProgressStats = (scores: ScoreMap) =>

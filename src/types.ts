@@ -70,6 +70,11 @@ export type DecisionOption = {
   altPool: string[];
 };
 
+export type MenuPlan = {
+  decision: DecisionOption;
+  meals: MealPlanItem[];
+};
+
 export type RecommendationProfile = {
   prefersHot: boolean;
   prefersDrink: boolean;
