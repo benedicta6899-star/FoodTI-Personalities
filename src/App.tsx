@@ -156,7 +156,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fffbf7] px-4 py-5 text-[#3a2e2b] md:px-6 md:py-7 lg:px-8">
+    <div className="min-h-screen overflow-x-hidden bg-[#fffbf7] px-4 py-4 text-[#3a2e2b] sm:py-5 md:px-6 md:py-7 lg:px-8">
       <div className="mx-auto max-w-7xl">
         {step === 'home' && <HomePage onStart={handleStart} />}
 

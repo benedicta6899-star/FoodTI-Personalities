@@ -23,11 +23,13 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: hidden;
   background: var(--bg-cream);
   color: var(--text-primary);
   font-family: var(--font-sans);
@@ -42,6 +44,15 @@ button {
 
 #root {
   min-height: 100vh;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
 }
 
 .font-editorial {

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { personalityTypes } from '../data/personalities';
 
@@ -43,6 +44,8 @@ const floatingItems = [
 
 const cardTransition = { duration: 0.24, ease: 'easeOut' as const };
 
+const MOBILE_MEDIA_QUERY = '(max-width: 767px)';
+
 const FloatingDecor = ({ kind }: { kind: (typeof floatingItems)[number]['kind'] }) => {
   if (kind === 'fork') {
     return (
@@ -73,8 +76,33 @@ const FloatingDecor = ({ kind }: { kind: (typeof floatingItems)[number]['kind'] 
 };
 
 export const HomePage = ({ onStart }: HomePageProps) => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [hotPersonalitiesExpanded, setHotPersonalitiesExpanded] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_MEDIA_QUERY);
+    const updateIsMobile = (event?: MediaQueryListEvent) => {
+      setIsMobile(event ? event.matches : mediaQuery.matches);
+    };
+
+    updateIsMobile();
+    mediaQuery.addEventListener('change', updateIsMobile);
+
+    return () => mediaQuery.removeEventListener('change', updateIsMobile);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) {
+      setHotPersonalitiesExpanded(false);
+    }
+  }, [isMobile]);
+
+  const hotPersonalityItems = personalityTypes.slice(0, 11);
+  const visiblePersonalityItems =
+    isMobile && !hotPersonalitiesExpanded ? hotPersonalityItems.slice(0, 3) : hotPersonalityItems;
+
   return (
-    <section className="relative overflow-hidden rounded-[40px] border border-white/70 bg-[rgba(255,251,247,0.78)] px-5 py-5 shadow-[0_40px_120px_rgba(179,129,104,0.10)] ring-1 ring-white/60 backdrop-blur-xl md:px-8 md:py-7 xl:px-10">
+    <section className="relative overflow-x-hidden rounded-[32px] border border-white/70 bg-[rgba(255,251,247,0.78)] px-4 py-4 shadow-[0_40px_120px_rgba(179,129,104,0.10)] ring-1 ring-white/60 backdrop-blur-xl sm:px-5 sm:py-5 md:px-8 md:py-7 xl:px-10">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(230,110,80,0.08),transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(230,110,80,0.06),transparent_28%)]" />
 
       {floatingItems.map((item) => (
@@ -102,9 +130,9 @@ export const HomePage = ({ onStart }: HomePageProps) => {
         </motion.div>
       ))}
 
-      <header className="relative rounded-[30px] border border-white/70 bg-white/55 px-4 py-4 shadow-[0_16px_40px_rgba(163,122,99,0.08)] backdrop-blur-xl md:px-6 md:py-5">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="min-w-0 md:min-w-[240px]">
+      <header className="relative rounded-[28px] border border-white/70 bg-white/55 px-4 py-4 shadow-[0_16px_40px_rgba(163,122,99,0.08)] backdrop-blur-xl sm:px-5 md:px-6 md:py-5">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:flex lg:items-center lg:justify-between">
+          <div className="min-w-0 sm:min-w-[220px] md:min-w-[240px]">
             <div className="font-ui text-sm font-semibold uppercase tracking-[0.42em] text-[#e66e50]">
               FoodTI
             </div>
@@ -116,7 +144,7 @@ export const HomePage = ({ onStart }: HomePageProps) => {
           </div>
 
           <motion.div
-            className="flex flex-1 justify-center md:px-6"
+            className="flex justify-start sm:col-span-2 sm:justify-center sm:px-2 lg:flex-1 lg:px-6"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: 'easeOut' }}
@@ -124,15 +152,15 @@ export const HomePage = ({ onStart }: HomePageProps) => {
             <img
               src="/foodti-logo.svg"
               alt="FoodTI"
-              className="h-12 w-auto object-contain drop-shadow-[0_10px_24px_rgba(230,110,80,0.20)] md:h-14"
+              className="h-10 max-w-full w-auto object-contain drop-shadow-[0_10px_24px_rgba(230,110,80,0.20)] sm:h-11 md:h-14"
             />
           </motion.div>
 
-          <div className="flex justify-start md:min-w-[240px] md:justify-end">
+          <div className="flex justify-start sm:justify-end md:min-w-[240px] md:justify-end">
             <motion.div
               whileHover={{ y: -2, boxShadow: '0 20px 40px rgba(163,122,99,0.10)' }}
               transition={cardTransition}
-              className="font-ui inline-flex items-center gap-2 rounded-full border border-[#ece2db] bg-white/85 px-4 py-2.5 text-xs font-semibold tracking-[0.18em] text-[#73655f] shadow-[0_8px_20px_rgba(163,122,99,0.08)]"
+              className="font-ui inline-flex min-h-11 max-w-full items-center gap-2 rounded-full border border-[#ece2db] bg-white/85 px-4 py-2.5 text-xs font-semibold tracking-[0.18em] text-[#73655f] shadow-[0_8px_20px_rgba(163,122,99,0.08)]"
             >
               <span className="text-[#e66e50]">✦</span>
               轻娱乐人格测试
@@ -141,12 +169,12 @@ export const HomePage = ({ onStart }: HomePageProps) => {
         </div>
       </header>
 
-      <div className="relative px-2 pb-4 pt-14 text-center md:px-8 md:pb-6 md:pt-18">
+      <div className="relative px-1 pb-2 pt-8 text-center sm:px-2 sm:pt-10 md:px-8 md:pb-6 md:pt-18">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.65, delay: 0.15, ease: 'easeOut' }}
-          className="font-ui mb-8 inline-flex items-center gap-3 rounded-full border border-[#f1dfd7] bg-white/80 px-5 py-3 text-sm font-semibold tracking-[0.18em] text-[#e66e50] shadow-[0_14px_34px_rgba(163,122,99,0.08)] backdrop-blur"
+          className="font-ui mb-5 inline-flex min-h-11 max-w-full items-center gap-3 rounded-full border border-[#f1dfd7] bg-white/80 px-4 py-2.5 text-xs font-semibold tracking-[0.16em] text-[#e66e50] shadow-[0_14px_34px_rgba(163,122,99,0.08)] backdrop-blur sm:mb-6 sm:px-5 sm:py-3 sm:text-sm sm:tracking-[0.18em]"
         >
           <span className="text-base">✦</span>
           3分钟测测你的美食人格
@@ -156,10 +184,10 @@ export const HomePage = ({ onStart }: HomePageProps) => {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.22, ease: 'easeOut' }}
-          className="font-editorial mx-auto max-w-4xl text-[4.2rem] font-semibold leading-[0.88] tracking-[-0.06em] text-[#3a2e2b] md:text-[5.8rem] lg:text-[7rem]"
+          className="font-editorial mx-auto max-w-4xl text-[2.8rem] font-semibold leading-[0.92] tracking-[-0.05em] text-[#3a2e2b] sm:text-[3.55rem] md:text-[5.8rem] lg:text-[7rem]"
         >
           <span className="block">想好今天</span>
-          <span className="mt-2 block text-transparent [-webkit-text-stroke:1.3px_#3a2e2b] md:[-webkit-text-stroke:1.8px_#3a2e2b]">
+          <span className="mt-1.5 block text-transparent [-webkit-text-stroke:1px_#3a2e2b] sm:mt-2 sm:[-webkit-text-stroke:1.2px_#3a2e2b] md:[-webkit-text-stroke:1.8px_#3a2e2b]">
             吃什么了吗？
           </span>
         </motion.h1>
@@ -168,7 +196,7 @@ export const HomePage = ({ onStart }: HomePageProps) => {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, delay: 0.35, ease: 'easeOut' }}
-          className="font-ui mx-auto mt-8 max-w-2xl text-lg font-medium leading-8 tracking-[0.03em] text-[#8d7f79] md:text-[1.35rem]"
+          className="font-ui mx-auto mt-5 max-w-2xl px-2 text-base font-medium leading-7 tracking-[0.02em] text-[#8d7f79] sm:mt-6 sm:text-lg sm:leading-8 md:mt-8 md:px-0 md:text-[1.35rem]"
         >
           解决你的选择困难
         </motion.p>
@@ -177,40 +205,40 @@ export const HomePage = ({ onStart }: HomePageProps) => {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.46, ease: 'easeOut' }}
-          className="mt-12 flex justify-center"
+          className="mt-7 flex justify-center sm:mt-9 md:mt-12"
         >
           <motion.button
             onClick={onStart}
             whileHover={{ y: -3, scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             transition={cardTransition}
-            className="group relative inline-flex overflow-hidden rounded-full bg-[#1f1b19] px-10 py-5 font-ui text-lg font-semibold tracking-[0.08em] text-white shadow-[0_24px_50px_rgba(31,27,25,0.16)]"
+            className="group relative inline-flex min-h-11 max-w-full items-center justify-center overflow-hidden rounded-full bg-[#1f1b19] px-6 py-3.5 text-center font-ui text-base font-semibold tracking-[0.06em] text-white shadow-[0_24px_50px_rgba(31,27,25,0.16)] sm:px-8 sm:py-4 sm:text-lg sm:tracking-[0.08em] md:px-10 md:py-5"
           >
             <span className="absolute inset-0 bg-[linear-gradient(115deg,transparent_20%,rgba(255,255,255,0.16)_45%,rgba(255,255,255,0.42)_50%,rgba(255,255,255,0.16)_55%,transparent_80%)] opacity-70 animate-[shimmer_4.6s_linear_infinite] group-hover:opacity-100" />
             <span className="relative z-10">立即测一份今日菜单</span>
-            <span className="relative z-10 ml-4 text-2xl transition-transform duration-300 group-hover:translate-x-1">
+            <span className="relative z-10 ml-3 text-xl transition-transform duration-300 group-hover:translate-x-1 sm:ml-4 sm:text-2xl">
               →
             </span>
           </motion.button>
         </motion.div>
       </div>
 
-      <div className="relative mt-4 grid gap-6 border-t border-[#eee2da] pt-8 md:mt-6 md:grid-cols-[1.12fr_0.88fr] md:pt-10">
+      <div className="relative mt-3 grid gap-4 border-t border-[#eee2da] pt-5 sm:mt-4 sm:gap-5 sm:pt-6 md:mt-6 md:grid-cols-[1.12fr_0.88fr] md:gap-6 md:pt-10">
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4, ease: 'easeOut' }}
-          className="rounded-[30px] border border-white/75 bg-white/60 p-6 shadow-[0_20px_50px_rgba(163,122,99,0.08)] backdrop-blur"
+          className="rounded-[26px] border border-white/75 bg-white/60 p-4 shadow-[0_20px_50px_rgba(163,122,99,0.08)] backdrop-blur sm:p-5 md:rounded-[30px] md:p-6"
         >
-          <div className="mb-6 flex items-center gap-4">
-            <span className="h-10 w-3 rounded-full bg-[#e66e50]" />
-            <h2 className="font-editorial text-[1.18rem] font-semibold tracking-[-0.04em] text-[#3a2e2b] md:text-[1.3rem]">
+          <div className="mb-4 flex items-center gap-3 sm:mb-5 sm:gap-4 md:mb-6">
+            <span className="h-8 w-2.5 rounded-full bg-[#e66e50] sm:h-9 sm:w-3 md:h-10" />
+            <h2 className="font-editorial text-[1.05rem] font-semibold tracking-[-0.04em] text-[#3a2e2b] sm:text-[1.12rem] md:text-[1.3rem]">
               热门人格
             </h2>
           </div>
 
-          <div className="flex flex-wrap gap-4">
-            {personalityTypes.slice(0, 11).map((item, index) => (
+          <div className="flex flex-wrap gap-2.5 sm:gap-3 md:gap-4">
+            {visiblePersonalityItems.map((item, index) => (
               <motion.button
                 key={item.key}
                 type="button"
@@ -224,28 +252,42 @@ export const HomePage = ({ onStart }: HomePageProps) => {
                   boxShadow: '0 20px 40px rgba(230,110,80,0.12)',
                 }}
                 whileTap={{ scale: 0.98 }}
-                className="font-ui rounded-[28px] border border-[#efe5de] bg-[#fffdfb] px-6 py-4 text-[0.8rem] font-semibold tracking-[0.01em] text-[#81726b] shadow-[0_12px_28px_rgba(163,122,99,0.05)] transition-colors duration-300 md:text-[0.86rem]"
+                className="font-ui max-w-full rounded-[24px] border border-[#efe5de] bg-[#fffdfb] px-4 py-3 text-[0.78rem] font-semibold tracking-[0.01em] text-[#81726b] shadow-[0_12px_28px_rgba(163,122,99,0.05)] transition-colors duration-300 sm:px-5 sm:py-3.5 md:rounded-[28px] md:px-6 md:py-4 md:text-[0.86rem]"
               >
                 {item.name}
               </motion.button>
             ))}
           </div>
+
+          {isMobile && hotPersonalityItems.length > 3 ? (
+            <div className="mt-4 flex justify-center">
+              <motion.button
+                type="button"
+                onClick={() => setHotPersonalitiesExpanded((prev) => !prev)}
+                whileTap={{ scale: 0.98 }}
+                transition={cardTransition}
+                className="font-ui inline-flex min-h-11 items-center justify-center rounded-full border border-[#ead8cf] bg-white/90 px-5 py-2.5 text-sm font-semibold tracking-[0.06em] text-[#8b7267] shadow-[0_10px_26px_rgba(163,122,99,0.08)] transition-colors duration-300 hover:border-[#e66e50] hover:text-[#e66e50]"
+              >
+                {hotPersonalitiesExpanded ? '收起' : '查看更多'}
+              </motion.button>
+            </div>
+          ) : null}
         </motion.section>
 
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.52, ease: 'easeOut' }}
-          className="rounded-[30px] border border-white/75 bg-white/50 p-6 shadow-[0_20px_50px_rgba(163,122,99,0.07)] backdrop-blur"
+          className="rounded-[26px] border border-white/75 bg-white/50 p-4 shadow-[0_20px_50px_rgba(163,122,99,0.07)] backdrop-blur sm:p-5 md:rounded-[30px] md:p-6"
         >
-          <div className="mb-6 flex items-center gap-4">
-            <span className="h-10 w-3 rounded-full bg-[#d9d2cd]" />
-            <h2 className="font-editorial text-[1.18rem] font-semibold tracking-[-0.04em] text-[#3a2e2b] md:text-[1.3rem]">
+          <div className="mb-4 flex items-center gap-3 sm:mb-5 sm:gap-4 md:mb-6">
+            <span className="h-8 w-2.5 rounded-full bg-[#d9d2cd] sm:h-9 sm:w-3 md:h-10" />
+            <h2 className="font-editorial text-[1.05rem] font-semibold tracking-[-0.04em] text-[#3a2e2b] sm:text-[1.12rem] md:text-[1.3rem]">
               热门玩法
             </h2>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-2.5 sm:space-y-3 md:space-y-4">
             {gameplayHighlights.map((text, index) => (
               <motion.div
                 key={text}
@@ -253,10 +295,10 @@ export const HomePage = ({ onStart }: HomePageProps) => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.45, delay: 0.58 + index * 0.06, ease: 'easeOut' }}
                 whileHover={{ x: 4 }}
-                className="group flex items-start gap-4 rounded-[24px] border border-transparent px-3 py-3 transition-colors duration-300 hover:border-[#f1dfd7] hover:bg-white/70"
+                className="group flex items-start gap-3 rounded-[20px] border border-transparent px-2.5 py-2 transition-colors duration-300 hover:border-[#f1dfd7] hover:bg-white/70 sm:gap-4 sm:px-3 sm:py-2.5 md:rounded-[24px] md:px-3 md:py-3"
               >
-                <span className="mt-2 h-4 w-4 rounded-full border-[4px] border-[#e66e50]/95 bg-white shadow-[0_0_0_4px_rgba(230,110,80,0.08)]" />
-                <p className="font-ui text-[0.9rem] font-semibold leading-7 tracking-[0.01em] text-[#b4aba6] transition-colors duration-300 group-hover:text-[#7b6e68] md:text-[0.96rem]">
+                <span className="mt-1.5 h-3.5 w-3.5 shrink-0 rounded-full border-[4px] border-[#e66e50]/95 bg-white shadow-[0_0_0_4px_rgba(230,110,80,0.08)] sm:mt-2 sm:h-4 sm:w-4" />
+                <p className="font-ui text-[0.88rem] font-semibold leading-6 tracking-[0.01em] text-[#b4aba6] transition-colors duration-300 group-hover:text-[#7b6e68] sm:text-[0.92rem] sm:leading-6 md:text-[0.96rem] md:leading-7">
                   {text}
                 </p>
               </motion.div>
@@ -265,7 +307,7 @@ export const HomePage = ({ onStart }: HomePageProps) => {
         </motion.section>
       </div>
 
-      <div className="relative flex items-center justify-center gap-4 pb-2 pt-10 text-[#d4cbc5]">
+      <div className="relative flex flex-col items-center justify-center gap-2 pb-1 pt-7 text-[#d4cbc5] sm:gap-3 md:flex-row md:gap-4 md:pt-10">
         <span className="h-px w-12 bg-current" />
         <span className="font-ui text-xs font-semibold uppercase tracking-[0.38em]">FoodTI Atelier</span>
         <span className="h-px w-12 bg-current" />
